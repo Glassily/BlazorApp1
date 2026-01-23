@@ -1,6 +1,7 @@
 ﻿@using BlazorApp1.Services
 @inject MarkdownService Mds
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
 <div id="@containerId" class="markdown-body">
     @((MarkupString)MarkdownContent)
@@ -34,11 +35,20 @@
         if (!string.IsNullOrEmpty(Content))
         {
             MarkdownContent = Mds.ConvertToHtml(Content);
+
         }
         else
         {
             MarkdownContent = string.Empty;
         }
+
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // 确保 Prism.js 处理动态内容
+        await JSRuntime.InvokeVoidAsync("prismFunctions.highlightAll");
     }
 
 }
