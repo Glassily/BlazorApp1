@@ -1,0 +1,44 @@
+﻿@using BlazorApp1.Services
+@inject MarkdownService Mds
+@inject HttpClient Http
+
+<div id="@containerId" class="markdown-body">
+    @((MarkupString)MarkdownContent)
+</div>
+
+@code {
+
+    [Parameter]
+    public string? Content { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Source { set; get; } = string.Empty;
+
+    private string containerId = $"md-" + Guid.NewGuid().ToString("N");
+
+    private string MarkdownContent = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Source))
+        {
+            try
+            {
+                Content = await Http.GetStringAsync(Source);
+            }
+            catch (Exception ex)
+            {
+                Content = $"# Error\n\nUnable to load content from '{Source}'.\n\n```\n{ex.Message}\n```";
+            }
+        }
+        if (!string.IsNullOrEmpty(Content))
+        {
+            MarkdownContent = Mds.ConvertToHtml(Content);
+        }
+        else
+        {
+            MarkdownContent = string.Empty;
+        }
+    }
+
+}

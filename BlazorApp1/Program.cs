@@ -1,3 +1,4 @@
+using BlazorApp1.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,6 +13,9 @@ namespace BlazorApp1
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            // Register MarkdownService as a singleton
+            builder.Services.AddSingleton<MarkdownService>();
 
             await builder.Build().RunAsync();
         }
