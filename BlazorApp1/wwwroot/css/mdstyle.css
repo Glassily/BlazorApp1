@@ -11,3 +11,19 @@
         padding: 15px;
     }
 }
+
+/* Custom styles for Monaco Editor instances */
+#my-editor-id { /* applies to a specific editor instance */
+    height: 200px;
+
+}
+
+.my-editor-class { /* applies to all editor instances with this class */
+    height: 200px;
+
+}
+
+.monaco-editor-container { /* applies to all editor instances */
+    height: 200px;
+
+}

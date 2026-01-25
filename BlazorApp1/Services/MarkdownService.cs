@@ -20,6 +20,5 @@ namespace BlazorApp1.Services
         {
             return Markdown.ToHtml(markdown, _pipeline);
         }
-
     }
 }

@@ -19,6 +19,8 @@
 
     private string MarkdownContent = string.Empty;
 
+    private IJSObjectReference? module;
+
     protected override async Task OnParametersSetAsync()
     {
         if (!string.IsNullOrEmpty(Source))
@@ -34,7 +36,8 @@
         }
         if (!string.IsNullOrEmpty(Content))
         {
-            MarkdownContent = Mds.ConvertToHtml(Content);
+            MarkdownContent = Mds.ConvertToHtml(Content);//使用markdig转换
+            //await JSRuntime.InvokeVoidAsync("updatePreview", containerId, Content);//使用markdownit.js转换
 
         }
         else
@@ -45,8 +48,10 @@
 
     }
 
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        //TODO: 优化，只处理新增内容
         // 确保 Prism.js 处理动态内容
         await JSRuntime.InvokeVoidAsync("prismFunctions.highlightAll");
     }

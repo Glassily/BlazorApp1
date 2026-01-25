@@ -9,20 +9,23 @@
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
 
+    <!-- 引入 Monaco Editor 资源 -->
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+
     <!-- 1. 引入GitHub Markdown CSS -->
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">-->
     <link href="css/github-markdown.min.css" rel="stylesheet" />
     <link href="css/prism.css" rel="stylesheet" />
     <link href="css/mdstyle.css" rel="stylesheet" />
     <script src="js/prism.js"></script>
-    <script src="js/hightlightFunctions.js"></script>
-
+    <script src="js/markdown-functions.js"></script>
     <link rel="stylesheet" href="css/app.css" />
 
 
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="BlazorApp1.styles.css" rel="stylesheet" />
-    
+
     <!-- Start Single Page Apps for GitHub Pages -->
     <script type="text/javascript">
         // Single Page Apps for GitHub Pages
@@ -54,7 +57,7 @@
         }(window.location))
     </script>
     <!-- End Single Page Apps for GitHub Pages -->
-    
+
     <script type="importmap"></script>
 </head>
 
@@ -72,6 +75,8 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+
+
     <script src="js/decode#[.{fingerprint}].js"></script>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
     <script>
@@ -95,6 +100,7 @@
             }
         });
     </script>
+
 </body>
 
 </html>
