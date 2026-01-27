@@ -19,7 +19,7 @@
 
     private string MarkdownContent = string.Empty;
 
-    private IJSObjectReference? module;
+    //private IJSObjectReference? module;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -51,7 +51,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //TODO: 优化，只处理新增内容
+        // TODO 优化，只处理新增内容
         // 确保 Prism.js 处理动态内容
         await JSRuntime.InvokeVoidAsync("prismFunctions.highlightAll");
     }

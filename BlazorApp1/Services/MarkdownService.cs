@@ -18,7 +18,19 @@ namespace BlazorApp1.Services
         }
         public string ConvertToHtml(string markdown)
         {
-            return Markdown.ToHtml(markdown, _pipeline);
+            // Convert Markdown to HTML using the configured pipeline
+            // Handle simple exceptions during conversion
+            // TODO 可以根据需要扩展错误处理逻辑,例如记录日志等;
+            // TODO 增加XSS防护等
+            try
+            {
+                return Markdown.ToHtml(markdown, _pipeline);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Markdown转换出错:\n{e}");
+                return "渲染错误";
+            }
         }
     }
 }

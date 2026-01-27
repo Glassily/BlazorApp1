@@ -1,0 +1,112 @@
+﻿@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+
+
+<StandaloneCodeEditor @ref="_markdownEditor" 
+    Id="markdown-input-editor" 
+    CssClass="markdown-input-editor-class" 
+    ConstructionOptions="EditorConstructionOptions" 
+    OnDidInit="EditorOnDidInit"
+    OnDidChangeModelContent="OnContentChanged" />
+
+<style>
+    .markdown-input-editor-class {
+        height: 300px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
+
+
+
+@code {
+    private StandaloneCodeEditor? _markdownEditor;
+    private string? _internalValue;
+    private bool _editorInitialized = false;
+
+    [Parameter]
+    public string Value { set; get; } = string.Empty;
+
+    [Parameter] 
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; } = "";
+
+    [Parameter]
+    public int Height { get; set; } = 300;
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            Language = "markdown",
+            AutomaticLayout = true,
+            Theme = "vs-light",//"vs-dark"
+            LineNumbers = "off",
+            Minimap = new EditorMinimapOptions{ Enabled = false },
+            ScrollBeyondLastLine = false,
+            Padding = new EditorPaddingOptions { Top = 10, Bottom = 10 },
+            FontSize = 14,
+            WordWrap = "on",
+            Placeholder = Placeholder
+        };
+    }
+
+    // 初始化编辑器后触发
+    private async Task EditorOnDidInit()
+    {
+        // 参数初始化前设置内容
+        _editorInitialized = true;
+        _internalValue = Value;
+        if (_markdownEditor != null && _internalValue != null)
+        {
+            await _markdownEditor.SetValue(_internalValue);
+        }
+    }
+
+    //内容变化时触发
+    private async Task OnContentChanged(ModelContentChangedEvent args)
+    {
+        //Console.WriteLine("MarkdownInput 内容变化触发");
+        if (_markdownEditor != null && _editorInitialized)
+        {
+            //Console.WriteLine("MarkdownInput 内容变化处理");
+            _internalValue = await _markdownEditor.GetValue();
+            if (Value != _internalValue)
+            {
+                Value = _internalValue;// 同步参数值
+                await ValueChanged.InvokeAsync(Value);
+            }
+        }
+    }
+
+    // 参数变化时触发
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Value != _internalValue && _markdownEditor != null && _editorInitialized)
+        {
+            _internalValue = Value;
+            await _markdownEditor.SetValue(Value);
+            //Console.WriteLine("MarkdownInput 参数变化更新内容");
+        }
+    }
+
+    /// <summary>
+    /// 获取编辑器实例
+    /// </summary>
+    public StandaloneCodeEditor? GetEditorInstance() => _editorInitialized ? _markdownEditor : null;
+
+    /// <summary>
+    /// 手动聚焦到编辑器
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        if (_markdownEditor != null && _editorInitialized)
+        {
+            await _markdownEditor.Focus();
+        }
+    }
+
+}
