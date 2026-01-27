@@ -18,4 +18,9 @@
     <Folder Include="wwwroot\docs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\robots.txt" />
+    <None Include="wwwroot\sitemap.txt" />
+  </ItemGroup>
+
 </Project>
