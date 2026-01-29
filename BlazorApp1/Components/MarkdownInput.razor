@@ -1,4 +1,5 @@
-﻿@using BlazorMonaco
+﻿
+@using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 
@@ -34,8 +35,6 @@
     [Parameter]
     public string? Placeholder { get; set; } = "";
 
-    [Parameter]
-    public int Height { get; set; } = 300;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
