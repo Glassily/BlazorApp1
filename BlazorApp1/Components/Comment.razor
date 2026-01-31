@@ -1,0 +1,536 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 风格评论框组件</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+          background-color: #f6f8fa;
+          color: #24292e;
+          line-height: 1.5;
+          padding: 2rem;
+          min-height: 100vh;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .comment-box {
+          background: white;
+          border: 1px solid #e1e4e8;
+          border-radius: 6px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+          overflow: hidden;
+        }
+
+        .tab-nav {
+          display: flex;
+          border-bottom: 1px solid #e1e4e8;
+          padding: 0 16px;
+        }
+
+        .tab-btn {
+          background: none;
+          border: none;
+          padding: 12px 16px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #586069;
+          cursor: pointer;
+          position: relative;
+          transition: color 0.2s;
+        }
+
+        .tab-btn.active {
+          color: #0366d6;
+        }
+
+        .tab-btn.active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: #0366d6;
+        }
+
+        .tab-btn:hover:not(.active) {
+          color: #24292e;
+        }
+
+        .content-area {
+          padding: 16px;
+        }
+
+        .toolbar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #eaecef;
+          margin-bottom: 12px;
+        }
+
+        .toolbar-btn {
+          background: #f6f8fa;
+          border: 1px solid #e1e4e8;
+          border-radius: 6px;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          color: #586069;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+          background: #e1e4e8;
+          color: #24292e;
+          border-color: #d1d5da;
+        }
+
+        .toolbar-btn:active {
+          background: #d1d5da;
+        }
+
+        .editor-area {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .comment-textarea {
+          width: 100%;
+          min-height: 120px;
+          padding: 12px;
+          border: 1px solid #e1e4e8;
+          border-radius: 6px;
+          font-family: inherit;
+          font-size: 14px;
+          resize: vertical;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .comment-textarea:focus {
+          outline: none;
+          border-color: #0366d6;
+          box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+        }
+
+        .preview-area {
+          min-height: 120px;
+          padding: 16px;
+          background-color: #f6f8fa;
+          border-radius: 6px;
+          border: 1px solid #e1e4e8;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          line-height: 1.6;
+          color: #24292e;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          color: #6a737d;
+          font-style: italic;
+        }
+
+        .preview-area:not(:empty) {
+          color: #24292e;
+          font-style: normal;
+        }
+
+        .footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          border-top: 1px solid #e1e4e8;
+          background-color: #f6f8fa;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .footer-text {
+          font-size: 12px;
+          color: #586069;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+
+        .footer-text a {
+          color: #0366d6;
+          text-decoration: none;
+        }
+
+        .footer-text a:hover {
+          text-decoration: underline;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .btn {
+          padding: 6px 16px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: 1px solid transparent;
+        }
+
+        .btn-secondary {
+          background: #f6f8fa;
+          color: #24292e;
+          border-color: #e1e4e8;
+        }
+
+        .btn-secondary:hover {
+          background: #e1e4e8;
+          border-color: #d1d5da;
+        }
+
+        .btn-secondary:disabled {
+          background: #f6f8fa;
+          color: #959da6;
+          border-color: #e1e4e8;
+          cursor: not-allowed;
+        }
+
+        .btn-primary {
+          background: #2ea44f;
+          color: white;
+          border-color: #2c974b;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          background: #2c974b;
+          border-color: #298543;
+        }
+
+        .btn-primary:disabled {
+          background: #959da6;
+          border-color: #959da6;
+          cursor: not-allowed;
+        }
+
+        .drag-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(3, 102, 214, 0.08);
+          border: 2px dashed #0366d6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          border-radius: 6px;
+          display: none;
+        }
+
+        .drag-overlay p {
+          font-size: 24px;
+          color: #0366d6;
+          font-weight: bold;
+        }
+
+        .instructions {
+          text-align: center;
+          margin-top: 2rem;
+          color: #586069;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        @@media (max-width: 768px) {
+          .tab-nav {
+            padding: 0 8px;
+          }
+
+          .toolbar {
+            padding-bottom: 8px;
+          }
+
+          .content-area {
+            padding: 12px;
+          }
+
+          .footer {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+          }
+
+          .btn {
+            flex: 1;
+            justify-content: center;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="comment-box">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="write">编写</button>
+                <button class="tab-btn" data-tab="preview">预览</button>
+            </div>
+
+            <div class="content-area">
+                <div id="write-tab">
+                    <div class="toolbar">
+                        <button class="toolbar-btn" data-action="bold" title="加粗">B</button>
+                        <button class="toolbar-btn" data-action="italic" title="斜体"><em>I</em></button>
+                        <button class="toolbar-btn" data-action="code" title="代码">`</button>
+                        <button class="toolbar-btn" data-action="link" title="链接">🔗</button>
+                        <button class="toolbar-btn" data-action="image" title="图片">🖼️</button>
+                        <button class="toolbar-btn" data-action="quote" title="引用">💬</button>
+                        <button class="toolbar-btn" data-action="ul" title="无序列表">•</button>
+                        <button class="toolbar-btn" data-action="ol" title="有序列表">1.</button>
+                    </div>
+
+                    <div class="editor-area">
+                        <textarea class="comment-textarea" placeholder="留下你的评论..."></textarea>
+                    </div>
+                </div>
+
+                <div id="preview-tab" style="display: none;">
+                    <div class="preview-area">预览区域（输入内容后切换查看效果）</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="footer-text">
+                    <span>支持</span>
+                    <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank" rel="noopener noreferrer">Markdown 语法</a>
+                    <span>•</span>
+                    <span>可拖拽文件到此处上传</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="clear-btn" disabled>清空</button>
+                    <button class="btn btn-primary" id="submit-btn" disabled>评论</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p>这是一个 GitHub 风格的评论输入框组件（纯 HTML/JS/CSS 实现）</p>
+            <p>功能包括：Markdown 工具栏、实时预览模式、响应式设计、文件拖拽提示</p>
+            <p>注意：此为前端演示组件，实际 Blazor 实现需使用 Razor 语法和 C# 逻辑</p>
+        </div>
+    </div>
+
+    <div class="drag-overlay" id="drag-overlay">
+        <p>释放以上传文件</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          // DOM 元素
+          const writeTabBtn = document.querySelector('[data-tab="write"]');
+          const previewTabBtn = document.querySelector('[data-tab="preview"]');
+          const writeTab = document.getElementById('write-tab');
+          const previewTab = document.getElementById('preview-tab');
+          const textarea = document.querySelector('.comment-textarea');
+          const previewArea = document.querySelector('.preview-area');
+          const clearBtn = document.getElementById('clear-btn');
+          const submitBtn = document.getElementById('submit-btn');
+          const toolbarBtns = document.querySelectorAll('.toolbar-btn');
+          const dragOverlay = document.getElementById('drag-overlay');
+          const commentBox = document.querySelector('.comment-box');
+
+          // 标签切换
+          writeTabBtn.addEventListener('click', () => {
+            writeTabBtn.classList.add('active');
+            previewTabBtn.classList.remove('active');
+            writeTab.style.display = 'block';
+            previewTab.style.display = 'none';
+            updatePreview();
+          });
+
+          previewTabBtn.addEventListener('click', () => {
+            previewTabBtn.classList.add('active');
+            writeTabBtn.classList.remove('active');
+            writeTab.style.display = 'none';
+            previewTab.style.display = 'block';
+            updatePreview();
+          });
+
+          // 文本区域输入处理
+          textarea.addEventListener('input', () => {
+            const value = textarea.value.trim();
+            clearBtn.disabled = !value;
+            submitBtn.disabled = !value;
+            updatePreview();
+          });
+
+          // 清空按钮
+          clearBtn.addEventListener('click', () => {
+            textarea.value = '';
+            clearBtn.disabled = true;
+            submitBtn.disabled = true;
+            updatePreview();
+            textarea.focus();
+          });
+
+          // 提交按钮
+          submitBtn.addEventListener('click', () => {
+            if (textarea.value.trim()) {
+              alert('评论已提交！内容：\n\n' + textarea.value);
+              textarea.value = '';
+              clearBtn.disabled = true;
+              submitBtn.disabled = true;
+              updatePreview();
+            }
+          });
+
+          // 更新预览
+          function updatePreview() {
+            if (previewTab.style.display !== 'none') {
+              const content = textarea.value.trim();
+              previewArea.textContent = content || '预览区域（输入内容后切换查看效果）';
+              previewArea.style.color = content ? '#24292e' : '#6a737d';
+              previewArea.style.fontStyle = content ? 'normal' : 'italic';
+            }
+          }
+
+          // 工具栏功能
+          toolbarBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+              const action = btn.dataset.action;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const value = textarea.value;
+              const selectedText = value.substring(start, end);
+
+              let prefix = '';
+              let suffix = '';
+              let cursorOffset = 0;
+
+              switch(action) {
+                case 'bold':
+                  prefix = '**';
+                  suffix = '**';
+                  cursorOffset = selectedText ? prefix.length + selectedText.length + suffix.length : prefix.length;
+                  break;
+                case 'italic':
+                  prefix = '*';
+                  suffix = '*';
+                  cursorOffset = selectedText ? prefix.length + selectedText.length + suffix.length : prefix.length;
+                  break;
+                case 'code':
+                  prefix = '`';
+                  suffix = '`';
+                  cursorOffset = selectedText ? prefix.length + selectedText.length + suffix.length : prefix.length;
+                  break;
+                case 'link':
+                  prefix = '[' + (selectedText || '链接文本') + '](';
+                  suffix = ')';
+                  cursorOffset = prefix.length + (selectedText ? selectedText.length : 4) + suffix.length - 1;
+                  break;
+                case 'image':
+                  prefix = '![' + (selectedText || '图片描述') + '](';
+                  suffix = ')';
+                  cursorOffset = prefix.length + (selectedText ? selectedText.length : 4) + suffix.length - 1;
+                  break;
+                case 'quote':
+                  prefix = '> ';
+                  cursorOffset = prefix.length + (selectedText ? selectedText.length : 0);
+                  break;
+                case 'ul':
+                  prefix = '- ';
+                  cursorOffset = prefix.length + (selectedText ? selectedText.length : 0);
+                  break;
+                case 'ol':
+                  prefix = '1. ';
+                  cursorOffset = prefix.length + (selectedText ? selectedText.length : 0);
+                  break;
+              }
+
+              // 处理多行引用和列表
+              if (['quote', 'ul', 'ol'].includes(action) && selectedText.includes('\n')) {
+                const lines = selectedText.split('\n');
+                const formatted = lines.map(line => `${prefix}${line}`).join('\n');
+                textarea.value = value.substring(0, start) + formatted + value.substring(end);
+                textarea.setSelectionRange(start + formatted.length, start + formatted.length);
+              } else {
+                // 普通情况
+                const replacement = selectedText ? `${prefix}${selectedText}${suffix}` : `${prefix}${suffix}`;
+                textarea.value = value.substring(0, start) + replacement + value.substring(end);
+
+                // 设置光标位置
+                let newCursorPos;
+                if (selectedText) {
+                  newCursorPos = start + prefix.length + selectedText.length + suffix.length;
+                } else {
+                  newCursorPos = start + cursorOffset;
+                }
+
+                textarea.setSelectionRange(newCursorPos, newCursorPos);
+              }
+
+              textarea.focus();
+              textarea.dispatchEvent(new Event('input'));
+            });
+          });
+
+          // 拖拽文件上传效果
+          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            commentBox.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+          });
+
+          function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+
+          ['dragenter', 'dragover'].forEach(eventName => {
+            commentBox.addEventListener(eventName, highlight, false);
+          });
+
+          ['dragleave', 'drop'].forEach(eventName => {
+            commentBox.addEventListener(eventName, unhighlight, false);
+          });
+
+          function highlight() {
+            dragOverlay.style.display = 'flex';
+          }
+
+          function unhighlight() {
+            dragOverlay.style.display = 'none';
+          }
+
+          // 初始化状态
+          clearBtn.disabled = true;
+          submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

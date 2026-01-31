@@ -1,5 +1,4 @@
 ﻿using Markdig;
-using Markdig.Prism;
 
 namespace BlazorApp1.Services
 {
@@ -13,7 +12,6 @@ namespace BlazorApp1.Services
                 .UseAdvancedExtensions()            // 启用高级扩展
                 .UseEmojiAndSmiley()                // 支持表情符号
                 .UseSoftlineBreakAsHardlineBreak()  // 软换行转硬换行
-                .UsePrism()                         // 代码高亮
                 .Build();
         }
         public string ConvertToHtml(string markdown)
