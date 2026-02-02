@@ -14,6 +14,9 @@ namespace BlazorApp1
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+            // Register JsModuleService as a singleton
+            builder.Services.AddSingleton<IJsModuleService, JsModuleService>();
+
             // Register MarkdownService as a singleton
             builder.Services.AddSingleton<MarkdownService>();
 

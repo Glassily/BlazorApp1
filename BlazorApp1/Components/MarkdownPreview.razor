@@ -35,9 +35,8 @@
         }
         if (!string.IsNullOrEmpty(Content))
         {
-            MarkdownContent = Mds.ConvertToHtml(Content);//使用markdig转换
-            //await JSRuntime.InvokeVoidAsync("updatePreview", containerId, Content);//使用markdownit.js转换
-
+            //使用markdig或其他js库进行转换
+            MarkdownContent = await Mds.ConvertToHtmlAsync(Content);
         }
         else
         {
@@ -49,6 +48,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // 确保 Prism.js 处理动态内容
+        //TODO Bug: 语言名称会置顶，悬浮在其他元素上方，遮挡部分内容，待解决
         await JSRuntime.InvokeVoidAsync("prismFunctions.highlightAll");
     }
 
