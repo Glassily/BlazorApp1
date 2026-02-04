@@ -1,52 +1,70 @@
 ﻿using Microsoft.JSInterop;
+using System.Collections.Concurrent;
 
 namespace BlazorApp1.Services
 {
-    // 定义接口（便于测试和扩展）
     public interface IJsModuleService : IAsyncDisposable
     {
-        Task<IJSObjectReference> GetOrImportAsync(string moduleName);
+        Task<IJSObjectReference> GetOrImportAsync(string modulePath);
     }
 
     public class JsModuleService(IJSRuntime js) : IJsModuleService
     {
-        private readonly IJSRuntime _js = js;
+        private readonly IJSRuntime _jsRuntime = js;
         private readonly Dictionary<string, IJSObjectReference> _modules = [];
-        private readonly SemaphoreSlim _lock = new(1, 1);
+        private readonly SemaphoreSlim _loadLock = new(1, 1);
 
 
-        public async Task<IJSObjectReference> GetOrImportAsync(string moduleName)
+        /// <summary>
+        /// 获取或引入JS模块
+        /// </summary>
+        /// <param name="modulePath">模块</param>
+        /// <returns>JS模块对象</returns>
+        public async Task<IJSObjectReference> GetOrImportAsync(string modulePath)
         {
-            await _lock.WaitAsync();
+            await _loadLock.WaitAsync();
             try
             {
-                if (!_modules.TryGetValue(moduleName, out var module))
+                if (!_modules.TryGetValue(modulePath, out var module))
                 {
-                    module = await _js.InvokeAsync<IJSObjectReference>(
-                        "import", moduleName);
-                    _modules[moduleName] = module;
+                    module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", modulePath);
+                    _modules.TryAdd(modulePath, module);
                 }
                 return module;
             }
             finally
             {
-                _lock.Release();
+                _loadLock.Release();
             }
+        }
+
+        public bool IsModuleLoaded(string moduleName)
+        {
+            return _modules.ContainsKey(moduleName);
         }
 
         public async ValueTask DisposeAsync()
         {
 
-            // Dispose all imported JS modules
-            foreach (var module in _modules.Values)
+            await _loadLock.WaitAsync();
+            try
             {
-                await module.DisposeAsync();
+                foreach (var module in _modules)
+                {
+                    await module.Value.DisposeAsync();
+                }
+                _modules.Clear();
+            } 
+            catch (AggregateException agEx)
+            {
+                // 记录日志，但不重新抛出，确保所有模块都被尝试释放
+                Console.WriteLine($"释放JS模块时发生错误: {agEx.Message}");
             }
-            _modules.Clear();
-            _lock.Dispose();
+            finally { 
+                _loadLock.Release();
+            }
 
             GC.SuppressFinalize(this);
         }
-
     }
 }

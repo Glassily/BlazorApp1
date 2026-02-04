@@ -1,5 +1,6 @@
 ﻿using Markdig;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Implementation;
 using System.Threading.Tasks;
 
 namespace BlazorApp1.Services
@@ -37,8 +38,11 @@ namespace BlazorApp1.Services
             }
             try
             {
-                var module = await _jsModule.GetOrImportAsync("./markdownConverter.js");
-                var result = await module.InvokeAsync<string>("convertMarkdownToHtml", markdown);
+                var module = await _jsModule.GetOrImportAsync("/js/md-modules.js");
+                var result = await module.InvokeAsync<string>(
+                    "renderMarkdown1", 
+                    markdown
+                    );
                 return result;
 
             }

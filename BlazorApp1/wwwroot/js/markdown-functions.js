@@ -14,8 +14,3 @@ window.prismFunctions = {
         }
     }
 };
-
-//window.updatePreview = (element, markdown) => {
-//    const md = window.markdownit();
-//    element.innerHTML = md.render(markdown);
-//};

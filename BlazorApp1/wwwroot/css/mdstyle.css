@@ -1,29 +1,12 @@
-﻿.markdown-body {
-    box-sizing: border-box;
-    min-width: 200px;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 45px;
-}
-
-@media (max-width: 767px) {
-    .markdown-body {
-        padding: 15px;
-    }
-}
-
-/* Custom styles for Monaco Editor instances */
+﻿/* Custom styles for Monaco Editor instances */
 #my-editor-id { /* applies to a specific editor instance */
     height: 200px;
-
 }
 
 .my-editor-class { /* applies to all editor instances with this class */
     height: 200px;
-
 }
 
 .monaco-editor-container { /* applies to all editor instances */
     height: 200px;
-
 }
